@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Gift from './Gift';
 import logo from './logo.png';
+import axios from 'axios';
 import './App.css';
 
 class App extends Component {
@@ -8,15 +9,64 @@ class App extends Component {
     super(props);
 
     this.state = {
-      gifts: []
+      value: '',
+      gifts: [
+      ]
     };
 
     this.removeGift = this.removeGift.bind(this);
+    this.addAGift = this.addAGift.bind(this);
+    this.onChangeValue = this.onChangeValue.bind(this);
+    this.getAllTheCadow = this.getAllTheCadow.bind(this);
+    this.addAGift = this.addAGift.bind(this);
+    this.sendMail = this.sendMail.bind(this);
+
+  }
+  componentDidMount() {
+    this.getAllTheCadow();
+  }
+  getAllTheCadow() {
+    axios
+      .get('/gifts')
+      .then(response => response.data)
+      .then(data => {
+        this.setState({
+          gifts: data
+        });
+      });
   }
 
-  removeGift() {
+  removeGift(id) {
+    axios
+      .delete(`/NoCadowForBadGuy/${id}`)
+      .then(this.getAllTheCadow)
+  };
+
+  addAGift = () => {
+
+    axios.post('/PostAGifts', { name: this.state.value })
+      .then(this.getAllTheCadow)
+      .then(data => {
+        this.setState({ value: "" })
+      });
+
 
   }
+
+
+  sendMail = () => {
+    axios
+      .post('/mail', {
+        data: this.state.gifts.map(data =>
+          data.name).join('--')
+      })
+  }
+
+
+
+  onChangeValue = e => {
+    this.setState({ value: e.target.value });
+  };
 
   render() {
     return (
@@ -29,16 +79,42 @@ class App extends Component {
         <img src="https://media.giphy.com/media/JltOMwYmi0VrO/giphy.gif" />
 
         <form>
-          <input type="text" />
-          <button type="submit"> Ajouter </button>
+          <input
+            type="text"
+            value={this.state.value}
+            onChange={this.onChangeValue}
+          />
+          <button
+            type="BUTTON"
+            onClick={this.addAGift}>
+            Ajouter
+        </button>
+
         </form>
 
         <div className="GiftWrapper">
-          <Gift name="Peluche cerf XXL" remove={this.removeGift} />
-          <Gift name="Ferrari en plastique" remove={this.removeGift} />
+
+
+          {this.state.gifts.map((item) =>
+
+            <Gift
+              id={item.id}
+              remove={this.removeGift}
+              list={item.name} />
+
+          )}
+
+
+
         </div>
 
-        <button type="button" className="mail"> Dear Santa Florian, send me my gifts</button>
+        <button
+          type="button"
+          className="mail"
+          onClick={this.sendMail}
+        >
+          Dear Santa Florian, send me my gifts
+        </button>
 
       </div>
     );
