@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
-import './Gift.css';
+import './styles/Gift.css';
 
 class Gift extends Component {
-  constructor(props){
-    super(props); 
-  }
 
   render() {
+    const { name, remove } = this.props
     return (
       <div className="Gift">
-        UN SUPER CADEAU
-        <button className="remove">X</button>
+        {name}
+        <button className="remove" onClick={remove}>X</button>
       </div>
     );
   }
