@@ -12,23 +12,29 @@ class App extends Component {
       name: ''
     };
 
+    this.getGifts = this.getGifts.bind(this);
     this.removeGift = this.removeGift.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.submitChanges = this.submitChanges.bind(this);
   }
 
   componentDidMount() {
-    axios.get('/api')
-      .then(response => response.data)
-      .then(data => {
-        console.log(data)
-        this.setState({ data });
-      });
+    this.getGifts()
   }
 
+  getGifts() {
+    axios.get('/api')
+    .then(response => response.data)
+    .then(data => {
+      console.log(data)
+      this.setState({ data });
+    });
+  }
+  
   removeGift(id) {
     axios.delete(`/api/${id}`)
       .then(res => console.log(res.data))
+    this.getGifts();
   }
 
   handleChange(event) {
@@ -43,7 +49,9 @@ class App extends Component {
       .then(res => {
         console.log(res.data)
       })
+    this.getGifts();
   }
+
 
   render() {
     const { data } = this.state;
@@ -54,7 +62,7 @@ class App extends Component {
           <h1 className="App-title">It's Christmas !</h1>
         </header>
 
-        <img src="https://media.giphy.com/meda/JltOMwYmi0VrO/giphy.gif" alt="toto"/>
+        <img src="https://media.giphy.com/media/JltOMwYmi0VrO/giphy.gif" alt="toto"/>
 
         <form onSubmit={(event) => this.submitChanges(event)}>
           <input type="text" onChange={this.handleChange} />
@@ -65,7 +73,6 @@ class App extends Component {
           {data.map( (item, i) => <Gift name={item.name} key={i} remove={() => this.removeGift(item.id)} /> )}
         </div>
 
-        <button type="button" className="mail"> Dear Santa Florian, send me my gifts</button>
       </div>
     );
   }
