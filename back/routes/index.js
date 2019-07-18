@@ -1,14 +1,43 @@
 const express = require('express');
 const router = express.Router();
-const gifts = require('../data/gifts.json');
+const db = require('../connection');
 
-// Use this route to get all the gifts
-router.get('/', (req, res) => {
-  return res.json(gifts);
+
+router.get('/gifts', (req, res) => {
+  db.query('SELECT * FROM gifts', (err, results) => {
+    if (err) {
+      res.status(500).send('Erreur lors de la récupération des cadeaux');
+    } else {
+      res.json(results);
+    }
+  });
 });
 
-// You have two more routes to implement:
-// One to CREATE a new gift
-// One to DELETE a gift
+
+router.post('/gifts', (req, res) => {
+  const giftName = req.body;
+  db.query('INSERT INTO gifts SET ?;', [giftName], (err) => {
+    if (err) {
+      res.status(500).send('Erreur lors de l\'ajout du cadeau');
+      console.log(err);
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
+
+
+router.delete('/gifts/:id', (req, res) => {
+  const { id } = req.params;
+  db.query(`DELETE from gifts WHERE id = ${id}`, (err) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Erreur lors de la suppression du cadeau');
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
+
 
 module.exports = router;

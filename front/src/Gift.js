@@ -2,15 +2,21 @@ import React, { Component } from 'react';
 import './Gift.css';
 
 class Gift extends Component {
-  constructor(props){
-    super(props); 
+  constructor(props) {
+    super(props);
   }
 
   render() {
+    const { remove, nameGift } = this.props;
     return (
       <div className="Gift">
-        UN SUPER CADEAU
-        <button className="remove">X</button>
+        {nameGift}
+        <button
+          onClick={remove}
+          className="remove"
+        >
+          X
+          </button>
       </div>
     );
   }
